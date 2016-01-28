@@ -89,40 +89,4 @@ class CPUCTC(theano.Op):
 
 cpu_ctc_th = CPUCTC()
 
-if __name__ == '__main__':
-    acts = np.array([[[0.1, 0.6, 0.1, 0.1, 0.1]],
-                     [[0.1, 0.1, 0.6, 0.1, 0.1]]])
-    assert acts.shape == (2, 1, 5) # max_len is 2, minibatch is 1, alphabet_size is 5
-    labels = np.array([1, 2])
-    label_lens = np.array([2])
-    act_lens = np.array([2])
-    cost, grads = cpu_ctc(acts, act_lens, labels, label_lens)
-    print "cost:", cost.sum()
-    print "expected cost:", 2.46285844
-
-    def create_theano_func():
-        acts = T.ftensor3()
-        act_lens = T.ivector()
-        labels = T.ivector()
-        label_lens = T.ivector()
-        costs = CPUCTC()(acts, act_lens, labels, label_lens)
-        cost = T.mean(costs)
-        grads = T.grad(cost, acts)
-        f = theano.function([acts, act_lens, labels, label_lens], cost, allow_input_downcast=True)
-        g = theano.function([acts, act_lens, labels, label_lens], grads, allow_input_downcast=True)
-        return f, g
-    f, g = create_theano_func()
-    print f(acts, act_lens, labels, label_lens)
-    print g(acts, act_lens, labels, label_lens)
-
-
-
-
-
-
-
-
-
-
-
 
