@@ -61,9 +61,13 @@ class CPUCTCGrad(theano.Op):
     def make_node(self, *inputs):
         inputs = map(theano.tensor.as_tensor_variable, inputs)
         # add checks here for types and numdims of all inputs
-        return theano.Apply(self, inputs, [inputs[0].type()])
+        return theano.Apply(self, inputs, [T.ftensor3()])
 
     def perform(self, node, inputs, outputs):
+        inputs[0] = inputs[0].astype(np.float32)
+        inputs[1] = inputs[1].astype(np.int32)
+        inputs[2] = inputs[2].astype(np.int32)
+        inputs[3] = inputs[3].astype(np.int32)
         cost, gradients = cpu_ctc_np(*inputs)
         outputs[0][0] = gradients
 
@@ -77,6 +81,10 @@ class CPUCTC(theano.Op):
         return theano.Apply(self, inputs, [T.fvector()])
 
     def perform(self, node, inputs, outputs):
+        inputs[0] = inputs[0].astype(np.float32)
+        inputs[1] = inputs[1].astype(np.int32)
+        inputs[2] = inputs[2].astype(np.int32)
+        inputs[3] = inputs[3].astype(np.int32)
         cost, gradients = cpu_ctc_np(*inputs)
         outputs[0][0] = cost
 
