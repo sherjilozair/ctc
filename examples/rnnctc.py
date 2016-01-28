@@ -9,7 +9,7 @@ num_classes = 5
 mbsz = 1
 min_len = 10
 max_len = 10
-n_hidden = 10
+n_hidden = 100
 grad_clip = 100
 
 input_lens = T.ivector('input_lens')
@@ -18,15 +18,17 @@ output_lens = T.ivector('output_lens')
 
 l_in = lasagne.layers.InputLayer(shape=(mbsz, max_len, num_classes))
 
-l_forward = lasagne.layers.RecurrentLayer(l_in, num_classes, grad_clipping=grad_clip,
+l_forward_1 = lasagne.layers.RecurrentLayer(l_in, n_hidden, grad_clipping=grad_clip,
+        nonlinearity=lasagne.nonlinearities.rectify)
+l_forward_2 = lasagne.layers.RecurrentLayer(l_forward_1, num_classes, grad_clipping=grad_clip,
         nonlinearity=lasagne.nonlinearities.tanh)
-l_out = lasagne.layers.ReshapeLayer(l_forward, ((max_len, mbsz, num_classes)))
+l_out = lasagne.layers.ReshapeLayer(l_forward_2, ((max_len, mbsz, num_classes)))
 
 network_output = lasagne.layers.get_output(l_out)
 
 cost = T.mean(ctc.cpu_ctc_th(network_output, input_lens, output, output_lens))
 all_params = lasagne.layers.get_all_params(l_out)
-updates = lasagne.updates.adam(cost, all_params, 0.1)
+updates = lasagne.updates.adam(cost, all_params, 0.001)
 
 train = theano.function([l_in.input_var, input_lens, output, output_lens], cost, updates=updates)
 predict = theano.function([l_in.input_var], network_output)
@@ -39,10 +41,9 @@ while True:
     cost = train(*sample)
     out = predict(sample[0])
     print cost
-    #if cost == 0:
-    #    import ipdb; ipdb.set_trace()
-    print sample[0][0].argmax(1)
-    print out[:, 0].argmax(1)
+    print "input", sample[0][0].argmax(1)
+    print "prediction", out[:, 0].argmax(1)
+    print "expected", sample[2][:sample[3][0]]
 
 
 

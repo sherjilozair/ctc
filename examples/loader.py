@@ -17,8 +17,8 @@ class DataLoader:
             length = random.randint(self.min_len, self.max_len)
             input_lens.append(length)
             input = [random.randint(1, self.num_classes-1) for j in xrange(length)]
-            output = input[:] # identity output
-
+            #output = input[:] # identity output
+            output = input[::2] # every second input is output
             """
             # for acronym output
             flag = True
