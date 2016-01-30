@@ -18,9 +18,10 @@ class DataLoader:
             input_lens.append(length)
             input = [random.randint(1, self.num_classes-1) for j in xrange(length)]
             #output = input[:] # identity output
-            output = input[::2] # every second input is output
+            output = input[::4] # every 4th input is output
             """
             # for acronym output
+            output = []
             flag = True
             for j in xrange(len(input)):
                 if input[j] == 1:

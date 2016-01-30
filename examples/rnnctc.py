@@ -7,8 +7,8 @@ import ctc
 
 num_classes = 5
 mbsz = 1
-min_len = 10
-max_len = 10
+min_len = 12
+max_len = 12
 n_hidden = 100
 grad_clip = 100
 
@@ -18,25 +18,40 @@ output_lens = T.ivector('output_lens')
 
 l_in = lasagne.layers.InputLayer(shape=(mbsz, max_len, num_classes))
 
-l_forward_1 = lasagne.layers.RecurrentLayer(l_in, n_hidden, grad_clipping=grad_clip,
+h1f = lasagne.layers.RecurrentLayer(l_in, n_hidden, grad_clipping=grad_clip,
         nonlinearity=lasagne.nonlinearities.rectify)
-l_forward_2 = lasagne.layers.RecurrentLayer(l_forward_1, num_classes, grad_clipping=grad_clip,
-        nonlinearity=lasagne.nonlinearities.tanh)
-l_out = lasagne.layers.ReshapeLayer(l_forward_2, ((max_len, mbsz, num_classes)))
+h1b = lasagne.layers.RecurrentLayer(l_in, n_hidden, grad_clipping=grad_clip,
+        nonlinearity=lasagne.nonlinearities.rectify, backwards = True)
+h1 = lasagne.layers.ElemwiseSumLayer([h1f, h1b])
+
+h2f = lasagne.layers.RecurrentLayer(h1, n_hidden, grad_clipping=grad_clip,
+        nonlinearity=lasagne.nonlinearities.rectify)
+h2b = lasagne.layers.RecurrentLayer(h1, n_hidden, grad_clipping=grad_clip,
+        nonlinearity=lasagne.nonlinearities.rectify, backwards = True)
+h2 = lasagne.layers.ElemwiseSumLayer([h2f, h2b])
+
+h3 = lasagne.layers.RecurrentLayer(h2, num_classes, grad_clipping=grad_clip,
+        nonlinearity=lasagne.nonlinearities.linear)
+l_out = lasagne.layers.ReshapeLayer(h3, ((max_len, mbsz, num_classes)))
 
 network_output = lasagne.layers.get_output(l_out)
 
 cost = T.mean(ctc.cpu_ctc_th(network_output, input_lens, output, output_lens))
+grads = T.grad(cost, wrt=network_output)
 all_params = lasagne.layers.get_all_params(l_out)
 updates = lasagne.updates.adam(cost, all_params, 0.001)
 
 train = theano.function([l_in.input_var, input_lens, output, output_lens], cost, updates=updates)
 predict = theano.function([l_in.input_var], network_output)
+get_grad = theano.function([l_in.input_var, input_lens, output, output_lens], grads)
 
 from loader import DataLoader
 data_loader = DataLoader(mbsz=mbsz, min_len=min_len, max_len=max_len, num_classes=num_classes)
 
+i = 1
 while True:
+    i += 1
+    print i
     sample = data_loader.sample()
     cost = train(*sample)
     out = predict(sample[0])
@@ -44,6 +59,8 @@ while True:
     print "input", sample[0][0].argmax(1)
     print "prediction", out[:, 0].argmax(1)
     print "expected", sample[2][:sample[3][0]]
-
+    if i == 10000:
+        grads = get_grad(*sample)
+        import ipdb; ipdb.set_trace()
 
 
