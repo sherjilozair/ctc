@@ -32,7 +32,8 @@ h2 = lasagne.layers.ElemwiseSumLayer([h2f, h2b])
 
 h3 = lasagne.layers.RecurrentLayer(h2, num_classes, grad_clipping=grad_clip,
         nonlinearity=lasagne.nonlinearities.linear)
-l_out = lasagne.layers.ReshapeLayer(h3, ((max_len, mbsz, num_classes)))
+# Turn <minibatch_size, max_length, num_classes> into <max_length, minibatch_size, num_classes>
+l_out = lasagne.layers.DimshuffleLayer(h3, (1, 0, 2))
 
 network_output = lasagne.layers.get_output(l_out)
 
