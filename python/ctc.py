@@ -59,7 +59,7 @@ class CPUCTCGrad(theano.Op):
     __props__ = ()
 
     def make_node(self, *inputs):
-        inputs = map(theano.tensor.as_tensor_variable, inputs)
+        inputs = list(map(theano.tensor.as_tensor_variable, inputs))
         # add checks here for types and numdims of all inputs
         return theano.Apply(self, inputs, [T.ftensor3()])
 
@@ -76,7 +76,7 @@ class CPUCTC(theano.Op):
     __props__ = ()
 
     def make_node(self, *inputs):
-        inputs = map(theano.tensor.as_tensor_variable, inputs)
+        inputs = list(map(theano.tensor.as_tensor_variable, inputs))
         # add checks here for types and numdims of all inputs
         return theano.Apply(self, inputs, [T.fvector()])
 

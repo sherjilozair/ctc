@@ -11,10 +11,10 @@ label_lens = np.array([2])
 act_lens = np.array([2])
 cost, grads = cpu_ctc_np(acts, act_lens, labels, label_lens)
 
-print "expected cost:", 2.46285844
+print("expected cost:", 2.46285844)
 
-print "cost (numpy):", cost.sum()
-print "grads (numpy):", grads
+print("cost (numpy):", cost.sum())
+print("grads (numpy):", grads)
 
 def create_theano_func():
     acts = T.ftensor3()
@@ -29,8 +29,8 @@ def create_theano_func():
     return f, g
 
 f, g = create_theano_func()
-print "cost (theano):", f(acts, act_lens, labels, label_lens).sum()
-print "grads (theano)", g(acts, act_lens, labels, label_lens)
+print("cost (theano):", f(acts, act_lens, labels, label_lens).sum())
+print("grads (theano)", g(acts, act_lens, labels, label_lens))
 
 
 

@@ -1,2 +1,2 @@
-from ctc import cpu_ctc_np, cpu_ctc_th
+from .ctc import cpu_ctc_np, cpu_ctc_th
 del ctc
