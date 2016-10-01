@@ -1,5 +1,12 @@
+from __future__ import print_function
+
 import numpy as np
 import random
+
+try:
+    xrange
+except NameError:
+    xrange = range
 
 class DataLoader:
     def __init__(self, mbsz=128, min_len=20, max_len=30, num_classes=29):
@@ -50,4 +57,4 @@ class DataLoader:
 if __name__ == '__main__':
     dl = DataLoader()
     ret = dl.sample()
-    print ret[0].shape
+    print(ret[0].shape)
