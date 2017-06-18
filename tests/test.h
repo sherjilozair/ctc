@@ -1,8 +1,10 @@
 #pragma once
 
+#include <algorithm>
 #include <stdexcept>
 #include <vector>
 #include <random>
+
 
 #include <ctc.h>
 
