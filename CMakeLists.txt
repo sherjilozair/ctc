@@ -17,7 +17,7 @@ ENDIF()
 
 include_directories(include)
 
-FIND_PACKAGE(CUDA 6.5)
+FIND_PACKAGE(CUDA 8.0) # required for visual studio 2015. Prev: 6.5
 MESSAGE(STATUS "cuda found ${CUDA_FOUND}")
 
 # need to be at least 30 or __shfl_down in reduce wont compile
@@ -54,14 +54,14 @@ IF (CUDA_FOUND)
     MESSAGE(STATUS "Building shared library with GPU support")
 
     CUDA_ADD_LIBRARY(warpctc SHARED src/ctc_entrypoint.cu src/reduce.cu)
-    TARGET_LINK_LIBRARIES(warpctc ${CUDA_curand_LIBRARY})
+    TARGET_LINK_LIBRARIES(warpctc)
 
     add_executable(test_cpu tests/test_cpu.cpp )
     TARGET_LINK_LIBRARIES(test_cpu warpctc)
     SET_TARGET_PROPERTIES(test_cpu PROPERTIES COMPILE_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11")
 
     cuda_add_executable(test_gpu tests/test_gpu.cu)
-    TARGET_LINK_LIBRARIES(test_gpu warpctc ${CUDA_curand_LIBRARY})
+    TARGET_LINK_LIBRARIES(test_gpu warpctc)
 
     INSTALL(TARGETS warpctc
             RUNTIME DESTINATION bin

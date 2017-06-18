@@ -1,3 +1,5 @@
+#include <algorithm>
+#include <numeric>
 #include <cmath>
 #include <random>
 #include <tuple>
@@ -13,8 +15,8 @@ bool small_test() {
     const int alphabet_size = 5;
     const int T = 2;
 
-    std::vector<float> activations = {0.1, 0.6, 0.1, 0.1, 0.1,
-                                      0.1, 0.1, 0.6, 0.1, 0.1};
+    std::vector<float> activations = {0.1f, 0.6f, 0.1f, 0.1f, 0.1f,
+                                      0.1f, 0.1f, 0.6f, 0.1f, 0.1f};
 
     // Calculate the score analytically
     float expected_score;
@@ -65,6 +67,13 @@ bool small_test() {
 
     return (score > lb && score < ub);
 }
+
+int offset(int t, int n, int a) {
+    constexpr int minibatch = 2;
+    constexpr int alphabet_size = 6;
+    return (t * minibatch + n) * alphabet_size + a;
+}
+
 
 bool inf_test() {
     const int alphabet_size = 15;

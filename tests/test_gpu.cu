@@ -1,3 +1,4 @@
+#include <numeric>
 #include <cmath>
 #include <random>
 #include <tuple>
@@ -12,8 +13,8 @@ bool small_test() {
     const int alphabet_size = 5;
     const int T = 2;
 
-    std::vector<float> activations = {0.1, 0.6, 0.1, 0.1, 0.1,
-                                      0.1, 0.1, 0.6, 0.1, 0.1};
+    std::vector<float> activations = {0.1f, 0.6f, 0.1f, 0.1f, 0.1f,
+                                      0.1f, 0.1f, 0.6f, 0.1f, 0.1f};
 
     // Calculate the score analytically
     float expected_score;
