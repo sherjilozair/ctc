@@ -5,6 +5,11 @@
 
 #pragma once
 
+#ifndef CTC_API
+// define this to __declspec(dllexport) when building the libary with visual studio
+#define CTC_API
+#endif
+
 #ifdef __cplusplus
 #include <cstddef>
 extern "C" {
@@ -21,11 +26,14 @@ typedef enum {
     CTC_STATUS_UNKNOWN_ERROR = 4
 } ctcStatus_t;
 
+/** Returns a single integer which specifies the API version of the warpctc library */
+CTC_API int get_warpctc_version();
+
 /** Returns a string containing a description of status that was passed in
  *  \param[in] status identifies which string should be returned
  *  \return C style string containing the text description
  *  */
-const char* ctcGetStatusString(ctcStatus_t status);
+CTC_API const char* ctcGetStatusString(ctcStatus_t status);
 
 typedef enum {
     CTC_CPU = 0,
@@ -85,7 +93,7 @@ struct ctcComputeInfo {
  *  \return Status information
  *
  * */
-ctcStatus_t compute_ctc_loss(const float* const activations,
+CTC_API ctcStatus_t compute_ctc_loss(const float* const activations,
                              float* gradients,
                              const int* const flat_labels,
                              const int* const label_lengths,
@@ -115,7 +123,7 @@ ctcStatus_t compute_ctc_loss(const float* const activations,
  *
  *  \return Status information
  **/
-ctcStatus_t get_workspace_size(const int* const label_lengths,
+CTC_API ctcStatus_t get_workspace_size(const int* const label_lengths,
                                const int* const input_lengths,
                                int alphabet_size, int minibatch,
                                ctcComputeInfo info,
